@@ -27,7 +27,7 @@ def build_type_conversion_query(datatype_mapper):
     for item in datatype_mapper:
         field_name = item['field_name']
         operator = item['operator']
-        casting_required = item['cast']
+        casting_required = item['casting_required']
         if casting_required:
             set_query[field_name] = {operator: f'${field_name}'}
     

@@ -31,13 +31,13 @@ def update_datatype_inplace(name, set_query):
 
 def read_excel_document(file_name, sheet):
     file_to_read = f'./static/{file_name}-fields.xlsx'
-    excel_data = pd.read_excel(file_to_read, sheet_name=sheet)
+    excel_data = pd.read_excel(file_to_read, sheet_name=sheet, na_filter=False)
     datatype_information = excel_data.to_dict(orient='records')
     return datatype_information
 
 
 def read_text_file_as_list(file_name):
-    with open(f'{file_name}.txt', 'r') as f_obj:
+    with open(f'./static/{file_name}-list.txt', 'r') as f_obj:
         data = f_obj.read().split(',')
     
     return data

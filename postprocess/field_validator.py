@@ -2,8 +2,8 @@ from postprocess.utils import (
     MongoConnectionManager, read_excel_document, read_text_file_as_list)
 
 
-def build_validation_mapper(collection_name, sheet, true_fields_only=False):
-    datatype_information = read_excel_document(collection_name, sheet, true_fields_only)
+def build_validation_mapper(collection_name, sheet):
+    datatype_information = read_excel_document(collection_name, sheet)
     validation_mapper = []
     for item in datatype_information:
         field_mapper = {
@@ -76,6 +76,7 @@ def categorical_field_validation_query(item):
 
 
 def domain_validation_query(item):
+    set_query = {}
     if item['domain'] == 'non-negative':
         set_query = non_negative_field_validation_query(item)
     elif item['domain'] == 'categorical':
@@ -92,9 +93,13 @@ def fetch_validation_query(validation_mapper):
         domain = item['domain']
         field_name = item['field_name']
         datatype = item['datatype']
+        
+        if not domain:
+            continue
+        
         if domain.startswith('[') and domain.endswith(']'):
             domain = [
-                float(item) if datatype=='float' else int(item)
+                float(item) if datatype=='double' else int(item)
                 for item in domain[1:-1].split(',')]
             item['domain'] = domain
         
