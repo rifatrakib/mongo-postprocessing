@@ -1,5 +1,4 @@
-from postprocess.utils import MongoConnectionManager
-import pandas as pd
+from postprocess.utils import MongoConnectionManager, read_excel_document
 
 operator_mapper = {
     'string': '$toString',
@@ -9,42 +8,27 @@ operator_mapper = {
 }
 
 
-def read_excel_document(collection_name, sheet, true_fields_only):
-    file_to_read = f'./static/{collection_name}-fields.xlsx'
-    excel_data = pd.read_excel(file_to_read, sheet_name=sheet)
-    
-    if true_fields_only:
-        excel_data = excel_data[excel_data['cast']]
-    
-    datatype_information = excel_data.to_dict(orient='records')
-    return datatype_information
-
-
-def build_datatype_mapper(collection_name, sheet, true_fields_only=False):
-    datatype_information = read_excel_document(collection_name, sheet, true_fields_only)
-    mapper = []
+def build_datatype_mapper(collection_name, sheet):
+    datatype_information = read_excel_document(collection_name, sheet)
+    datatype_mapper = []
     for item in datatype_information:
         field_mapper = {
             'field_name': item['field_name'],
             'operator': operator_mapper[item['type']],
             'casting_required': item['cast']
         }
-        mapper.append(field_mapper)
+        datatype_mapper.append(field_mapper)
     
-    return mapper
+    return datatype_mapper
 
 
-def build_set_query(mapper):
+def build_type_conversion_query(datatype_mapper):
     set_query = {}
-    for field_name, operator in mapper.items():
-        set_query[field_name] = {operator: f'${field_name}'}
+    for item in datatype_mapper:
+        field_name = item['field_name']
+        operator = item['operator']
+        casting_required = item['cast']
+        if casting_required:
+            set_query[field_name] = {operator: f'${field_name}'}
     
     return set_query
-
-
-def update_datatype_inplace(name, set_query):
-    collection_name = f'{name}_collection'
-    pipeline = [{'$set': set_query}]
-    
-    with MongoConnectionManager('database', collection_name) as collection:
-        collection.update_many({}, pipeline)

@@ -1,0 +1,1 @@
+order placed,warehouse,prepared for shipping,shipped,on route,delivered
