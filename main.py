@@ -5,15 +5,17 @@ collection_information = [
         'name': 'collection', 'sheet_name': 'delivery',
         'require_processing': True,
         'tasks': {
-            'update_datatypes': True, 'validate': True
-        }
+            'update_datatypes': True, 'validate': True,
+            'labelleing': True,
+        },
     },
     {
         'name': 'ignore', 'sheet_name': 'does not matter',
         'require_processing': False,
         'tasks': {
-            'update_datatypes': False, 'validate': False
-        }
+            'update_datatypes': False, 'validate': False,
+            'labelleing': True,
+        },
     },
 ]
 
@@ -26,6 +28,9 @@ def run_updates_on_collections():
             
             if item['tasks']['validate']:
                 validate_collection_field_values(item['name'], item['sheet_name'])
+            
+            if item['tasks']['labelleing']:
+                resolve_collection_duplicate_data(item['name'])
 
 
 run_updates_on_collections()
