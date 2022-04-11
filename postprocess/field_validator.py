@@ -1,5 +1,6 @@
 from postprocess.utils import (
     MongoConnectionManager, read_excel_document, read_text_file_as_list)
+from datetime import date
 
 
 def build_validation_mapper(collection_name, sheet):
@@ -34,6 +35,7 @@ def build_switch_query_for_categorical_field(field_name, valid_values):
     branches = []
     for value in valid_values:
         branch = {'case': {'$eq': [f'${field_name}', value]}, 'then': value}
+        branches.append(branch)
     
     switch_query = {
         'branches': branches,
@@ -68,6 +70,24 @@ def defined_range_field_validation_query(item):
     return switch_query
 
 
+def future_date_validation_query(item, year_only=False):
+    field_name = item['field_name']
+    current_date = date.today()
+    if year_only:
+        current_date = current_date.year
+    
+    set_query = {
+        field_name: {
+            '$cond': {
+                'if': {'$gt': [f'${field_name}', current_date]},
+                'then': current_date,
+                'else': f'${field_name}'
+            }
+        }
+    }
+    return set_query
+
+
 def categorical_field_validation_query(item):
     field_name = item['field_name']
     valid_values = read_text_file_as_list(field_name)
@@ -76,8 +96,11 @@ def categorical_field_validation_query(item):
 
 
 def domain_validation_query(item):
-    set_query = {}
-    if item['domain'] == 'non-negative':
+    if item['num_type'] == 'date':
+        set_query = future_date_validation_query(item)
+    elif item['num_type'] == 'year':
+        set_query = future_date_validation_query(item, year_only=True)
+    elif item['domain'] == 'non-negative':
         set_query = non_negative_field_validation_query(item)
     elif item['domain'] == 'categorical':
         set_query = categorical_field_validation_query(item)
