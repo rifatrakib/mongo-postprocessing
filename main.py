@@ -1,13 +1,17 @@
-from postprocess.processor_hub import *
+from advanced_pipelines.controller import *
+from postprocess.controller import *
 
 collection_information = [
     {
         'name': 'collection', 'sheet_name': 'delivery',
-        'require_processing': True,
-        'tasks': {
+        'require_processing': True, 'build_pipelines': True,
+        'processing_tasks': {
             'update_datatypes': True, 'validate': True,
             'labelleing': True, 'stat_builder': True,
         },
+        'pipeline_tasks': {
+            'stat_collection': True
+        }
     },
     {
         'name': 'ignore', 'sheet_name': 'does not matter',
@@ -22,18 +26,22 @@ collection_information = [
 
 def run_updates_on_collections():
     for item in collection_information:
-        if item['require_processing']:
-            if item['tasks']['update_datatypes']:
+        if item.get('require_processing', False):
+            if item['processing_tasks']['update_datatypes']:
                 update_collection_field_datatypes(item['name'], item['sheet_name'])
             
-            if item['tasks']['validate']:
+            if item['processing_tasks']['validate']:
                 validate_collection_field_values(item['name'], item['sheet_name'])
             
-            if item['tasks']['labelleing']:
+            if item['processing_tasks']['labelleing']:
                 resolve_collection_duplicate_data(item['name'])
             
-            if item['tasks']['stat_builder']:
+            if item['processing_tasks']['stat_builder']:
                 statistical_collection_builder(item['name'], item['sheet_name'])
+        
+        if item.get('build_pipelines', False):
+            if item['pipeline_tasks']['stat_collection']:
+                collect_statistical_data(item['name'])
 
 
 run_updates_on_collections()
