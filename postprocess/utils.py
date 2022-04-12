@@ -29,6 +29,14 @@ def update_datatype_inplace(name, set_query):
         collection.update_many({}, pipeline)
 
 
+def rebuild_statistical_collection(name, data):
+    collection_name = f'{name}_stat_collection'
+    
+    with MongoConnectionManager('database', collection_name) as collection:
+        collection.delete_many({})
+        collection.insert_many(data)
+
+
 def read_excel_document(file_name, sheet):
     file_to_read = f'./static/{file_name}-fields.xlsx'
     excel_data = pd.read_excel(file_to_read, sheet_name=sheet, na_filter=False)

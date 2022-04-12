@@ -1,7 +1,8 @@
+from postprocess.statistical_collection_builder import build_field_category_mapper, fetch_statistical_data
 from postprocess.datatype_mapper import build_datatype_mapper, build_type_conversion_query
 from postprocess.field_validator import build_validation_mapper, build_validation_query
+from postprocess.utils import update_datatype_inplace, rebuild_statistical_collection
 from postprocess.duplicate_handler import label_fields_setter
-from postprocess.utils import update_datatype_inplace
 
 
 def update_collection_field_datatypes(name, sheet_name):
@@ -32,3 +33,9 @@ def resolve_collection_duplicate_data(name):
     }
     set_query = label_fields_setter('collection', label_mapper)
     update_datatype_inplace(name, set_query)
+
+
+def statistical_collection_builder(name, sheet_name):
+    field_category_mapper = build_field_category_mapper(name, sheet_name)
+    data = fetch_statistical_data(name, field_category_mapper)
+    rebuild_statistical_collection(name, data)

@@ -6,7 +6,7 @@ collection_information = [
         'require_processing': True,
         'tasks': {
             'update_datatypes': True, 'validate': True,
-            'labelleing': True,
+            'labelleing': True, 'stat_builder': True,
         },
     },
     {
@@ -14,7 +14,7 @@ collection_information = [
         'require_processing': False,
         'tasks': {
             'update_datatypes': False, 'validate': False,
-            'labelleing': True,
+            'labelleing': False, 'stat_builder': False,
         },
     },
 ]
@@ -31,6 +31,9 @@ def run_updates_on_collections():
             
             if item['tasks']['labelleing']:
                 resolve_collection_duplicate_data(item['name'])
+            
+            if item['tasks']['stat_builder']:
+                statistical_collection_builder(item['name'], item['sheet_name'])
 
 
 run_updates_on_collections()

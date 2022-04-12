@@ -1,12 +1,11 @@
-from postprocess.utils import (
-    MongoConnectionManager, read_excel_document, read_text_file_as_list)
+from postprocess.utils import read_excel_document, read_text_file_as_list
 from datetime import date
 
 
 def build_validation_mapper(collection_name, sheet):
-    datatype_information = read_excel_document(collection_name, sheet)
+    validation_information = read_excel_document(collection_name, sheet)
     validation_mapper = []
-    for item in datatype_information:
+    for item in validation_information:
         field_mapper = {
             'field_name': item['field_name'],
             'datatype': item['type'],
