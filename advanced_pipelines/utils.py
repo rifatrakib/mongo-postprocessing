@@ -37,3 +37,10 @@ def fetch_data_from_collection(collection_name, pipeline):
         data = list(collection.aggregate(pipeline=pipeline, allowDiskUse=True))
     
     return data
+
+
+def update_statistical_collection(data, name):
+    collection_name = f'{name}_statistics_collection'
+    with MongoConnectionManager('database', collection_name) as collection:
+        collection.delete_many({})
+        collection.insert_many(data)

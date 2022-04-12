@@ -10,7 +10,8 @@ collection_information = [
             'labelleing': True, 'stat_builder': True,
         },
         'pipeline_tasks': {
-            'stat_collection': True
+            'build_stat_collection': True,
+            'collect_dependency_data': True,
         }
     },
     {
@@ -40,8 +41,12 @@ def run_updates_on_collections():
                 statistical_collection_builder(item['name'], item['sheet_name'])
         
         if item.get('build_pipelines', False):
-            if item['pipeline_tasks']['stat_collection']:
-                collect_statistical_data(item['name'])
+            if item['pipeline_tasks']['build_stat_collection']:
+                build_statistical_dataset(item['name'])
+        
+        if item.get('build_pipelines', False):
+            if item['pipeline_tasks']['collect_dependency_data']:
+                collect_matching_statistical_data(item['name'])
 
 
 run_updates_on_collections()
