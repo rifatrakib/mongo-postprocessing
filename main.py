@@ -12,6 +12,7 @@ collection_information = [
         'pipeline_tasks': {
             'build_stat_collection': True,
             'collect_dependency_data': True,
+            'graph_data_collection': True,
         }
     },
     {
@@ -47,6 +48,10 @@ def run_updates_on_collections():
         if item.get('build_pipelines', False):
             if item['pipeline_tasks']['collect_dependency_data']:
                 collect_matching_statistical_data(item['name'])
+        
+        if item.get('build_pipelines', False):
+            if item['pipeline_tasks']['graph_data_collection']:
+                collect_graph_data(item['name'])
 
 
 run_updates_on_collections()

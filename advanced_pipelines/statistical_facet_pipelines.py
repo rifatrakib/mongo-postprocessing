@@ -72,7 +72,7 @@ def facet_query_builder(filters):
     return facet_stage
 
 
-def process_chart_data(data):
+def process_statistical_data(data):
     processed_data = {}
     
     for key, value in data.items():
@@ -105,6 +105,6 @@ def fetch_filtered_data(query_parameters, name):
     ]
     
     data = fetch_data_from_collection(collection_name, pipeline)[0]
-    result = process_chart_data(data)
+    result = process_statistical_data(data)
     
     return result
